@@ -2,7 +2,7 @@
 
 Quantitative Portfolio-Analyse mit Python — eigene Implementierung von Markowitz-Portfoliotheorie, Backtesting und ETF-Analyse auf realen Marktdaten.
 
-Teil eines 5-Monats-Projekts an der Schnittstelle Mathematik und Finanzen, inspiriert von der wissenschaftlich fundierten Vermögensaufbau-Logik von Dr. Andreas Beck.
+Teil eines 5-Monats-Projekts an der Schnittstelle Mathematik und Finanzen.
 
 ---
 
