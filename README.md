@@ -2,7 +2,7 @@
 
 Quantitative Portfolio-Analyse mit Python — eigene Implementierung von Markowitz-Portfoliotheorie, Backtesting und ETF-Analyse auf realen Marktdaten.
 
-Teil eines 5-Monats-Projekts an der Schnittstelle Mathematik und Finanzen, inspiriert von der wissenschaftlich fundierten Vermögensaufbau-Logik von Dr. Andreas Beck.
+Teil eines 5-Monats-Projekts an der Schnittstelle Mathematik und Finanzen.
 
 ---
 
@@ -125,7 +125,7 @@ Beim ersten Lauf werden die Daten über yfinance live von Yahoo Finance geladen 
 
 ## Hintergrund
 
-Das Projekt entsteht in einer fünfmonatigen Übergangsphase zwischen Mathematik-Bachelor (Universität Münster, Abschluss mit Auszeichnung) und Master-Studium an der Schnittstelle Mathematik und Finanzen.
+Das Projekt entsteht in einer fünfmonatigen Übergangsphase zwischen Mathematik-Bachelor (Universität Münster) und Master-Studium an der Schnittstelle Mathematik und Finanzen.
 
 Ziel ist es, die mathematischen Grundlagen der modernen Portfoliotheorie nicht nur theoretisch zu verstehen, sondern in eigenständig implementierten, transparenten und auf realen Daten validierten Tools umzusetzen — als Vorbereitung auf eine Karriere im quantitativen Asset Management beziehungsweise in der wissenschaftlich fundierten Vermögensverwaltung.
 
