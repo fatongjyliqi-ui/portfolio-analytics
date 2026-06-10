@@ -76,7 +76,8 @@ for n in simulationszahlen:
 # 3. Plots
 # ---------------------------------------------------------------------------
 
-os.makedirs("plots", exist_ok=True)
+plots_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "plots")
+os.makedirs(plots_dir, exist_ok=True)
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 fig.suptitle(
@@ -124,7 +125,7 @@ ax.legend(fontsize=9)
 ax.grid(True, alpha=0.25)
 
 plt.tight_layout()
-outpath = os.path.join("plots", "mc_konvergenz.png")
+outpath = os.path.join(plots_dir, "mc_konvergenz.png")
 plt.savefig(outpath, dpi=150, bbox_inches="tight")
 plt.show()
 print(f"\nGespeichert: {outpath}")

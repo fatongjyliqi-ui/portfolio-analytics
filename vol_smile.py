@@ -80,7 +80,8 @@ if not use_marktdaten:
 # Plot
 # ---------------------------------------------------------------------------
 
-os.makedirs("plots", exist_ok=True)
+plots_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "plots")
+os.makedirs(plots_dir, exist_ok=True)
 fig, ax = plt.subplots(figsize=(10, 6))
 
 ax.plot(
@@ -107,7 +108,7 @@ ax.legend(fontsize=10)
 ax.grid(True, alpha=0.25)
 
 plt.tight_layout()
-outpath = os.path.join("plots", "vol_smile.png")
+outpath = os.path.join(plots_dir, "vol_smile.png")
 plt.savefig(outpath, dpi=150, bbox_inches="tight")
 plt.show()
 print(f"Gespeichert: {outpath}")

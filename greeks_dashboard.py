@@ -76,8 +76,9 @@ for ax in axes.flatten():
             fontsize=7, color="gray")
 
 plt.tight_layout()
-os.makedirs("plots", exist_ok=True)
-outpath = os.path.join("plots", "greeks_dashboard.png")
+plots_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "plots")
+os.makedirs(plots_dir, exist_ok=True)
+outpath = os.path.join(plots_dir, "greeks_dashboard.png")
 plt.savefig(outpath, dpi=150, bbox_inches="tight")
 plt.show()
 print(f"Gespeichert: {outpath}")
