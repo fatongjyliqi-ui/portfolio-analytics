@@ -2,7 +2,7 @@
 
 Quantitative Portfolio-Analyse mit Python — eigene Implementierung von Markowitz-Portfoliotheorie, Backtesting und ETF-Analyse auf realen Marktdaten.
 
-Teil eines 5-Monats-Projekts an der Schnittstelle Mathematik und Finanzen.
+Teil eines 5-Monats-Projekts an der Schnittstelle Mathematik und Finanzen, inspiriert von der wissenschaftlich fundierten Vermögensaufbau-Logik von Dr. Andreas Beck.
 
 ---
 
@@ -40,6 +40,16 @@ Indexverläufe, Renditen-Verteilung, Korrelationen und Drawdown-Verläufe für d
 
 ![Faktor-Karte](plots/faktor_karte.png)
 
+### Phase 4 — Optionen und Black-Scholes
+
+**Greeks-Dashboard** — alle fünf partiellen Ableitungen des Black-Scholes-Preises (Delta, Gamma, Vega, Theta, Rho) als Funktion des Aktienkurses. Jeder Greek mit Call und Put in einem 6-Panel-Dashboard.
+
+![Greeks Dashboard](plots/greeks_dashboard.png)
+
+**Volatility Smile** — implizite Volatilität als Funktion der Moneyness (K/S). Demonstriert, dass Black-Scholes eine Vereinfachung ist: der Markt bewertet OTM-Puts mit einer Risikoprämie.
+
+![Volatility Smile](plots/vol_smile.png)
+
 ---
 
 ## Setup
@@ -63,6 +73,7 @@ portfolio-analytics/
 ├── backtester.py                # Werkzeug-Modul: Portfolio-Simulation mit Rebalancing
 ├── optimizer.py                 # Werkzeug-Modul: Markowitz-Optimierung & Frontier
 ├── factor_analysis.py           # Werkzeug-Modul: CAPM- und Fama-French-Regressionen
+├── options.py                   # Werkzeug-Modul: Black-Scholes, Greeks, IV, Monte Carlo
 ├── rendite_analyzer.py          # Eigenständiges Tool: Statistik-Report für Renditefolgen
 │
 ├── etf_kennzahlen.py            # Anwendung: ETF-Universum-Analyse (Tabelle)
@@ -70,12 +81,18 @@ portfolio-analytics/
 ├── strategievergleich.py        # Anwendung: Portfolio-Strategien-Backtest
 ├── efficient_frontier_demo.py   # Anwendung: Frontier-Plot mit Tangency & CML
 ├── factor_profile_etfs.py       # Anwendung: Fama-French-Faktoranalyse für ETFs
+├── greeks_dashboard.py          # Anwendung: Greeks-Dashboard (6 Panels)
+├── vol_smile.py                 # Anwendung: Volatility Smile (Markt- oder Synthetik)
+├── mc_pricer.py                 # Anwendung: MC-Pricer mit Varianzreduktion & Konvergenz
 │
 └── plots/                       # Generierte Charts
     ├── etf_charts.png
     ├── strategievergleich.png
     ├── efficient_frontier.png
-    └── faktor_karte.png
+    ├── faktor_karte.png
+    ├── greeks_dashboard.png
+    ├── vol_smile.png
+    └── mc_konvergenz.png
 ```
 
 **Werkzeug-Module** enthalten die wiederverwendbaren Funktionen. **Anwendungs-Skripte** importieren aus den Werkzeug-Modulen und produzieren konkrete Analysen.
@@ -93,6 +110,9 @@ python etf_charts.py                # ETF-Charts erzeugen (in plots/)
 python strategievergleich.py        # Strategien backtesten und plotten
 python efficient_frontier_demo.py   # Frontier-Plot mit Tangency & CML
 python factor_profile_etfs.py       # Faktor-Exposures für ETF-Universum
+python greeks_dashboard.py          # Greeks-Dashboard erzeugen (in plots/)
+python vol_smile.py                 # Volatility Smile erzeugen (in plots/)
+python mc_pricer.py                 # MC-Konvergenzanalyse erzeugen (in plots/)
 ```
 
 Beim ersten Lauf werden die Daten über yfinance live von Yahoo Finance geladen — dafür ist eine Internetverbindung nötig.
@@ -113,19 +133,18 @@ Beim ersten Lauf werden die Daten über yfinance live von Yahoo Finance geladen 
 
 ## Status
 
-**Aktueller Stand:** Phase 3 von 5 abgeschlossen.
+**Aktueller Stand:** Phase 4 von 5 abgeschlossen.
 
 - Phase 1 (Python-Grundlagen): abgeschlossen
 - Phase 2 (NumPy, Pandas, yfinance, Visualisierung, Backtesting): abgeschlossen
 - Phase 3 (Portfolio-Optimierung, Efficient Frontier, CAPM, Fama-French): abgeschlossen
-- Phase 4 (Faktor-Modelle, Faktorinvesting): geplant
-- Phase 5 (Monte-Carlo-Simulation, finales Analyse-Projekt): geplant
+- Phase 4 (Optionen, Black-Scholes, Greeks, Implizite Volatilität, Monte Carlo): abgeschlossen
+- Phase 5 (finales Analyse-Projekt): geplant
 
 ---
 
 ## Hintergrund
 
-Das Projekt entsteht in einer fünfmonatigen Übergangsphase zwischen Mathematik-Bachelor (Universität Münster) und Master-Studium an der Schnittstelle Mathematik und Finanzen.
+Das Projekt entsteht in einer fünfmonatigen Übergangsphase zwischen Mathematik-Bachelor (Universität Münster, Abschluss mit Auszeichnung) und Master-Studium an der Schnittstelle Mathematik und Finanzen.
 
 Ziel ist es, die mathematischen Grundlagen der modernen Portfoliotheorie nicht nur theoretisch zu verstehen, sondern in eigenständig implementierten, transparenten und auf realen Daten validierten Tools umzusetzen — als Vorbereitung auf eine Karriere im quantitativen Asset Management beziehungsweise in der wissenschaftlich fundierten Vermögensverwaltung.
-
