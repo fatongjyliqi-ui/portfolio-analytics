@@ -219,7 +219,9 @@ def mc_preis(
         seed:         Zufallsseed fuer Reproduzierbarkeit
 
     Returns:
-        (preis, standardfehler) — Standardfehler skaliert mit 1/sqrt(n_sim)
+        (preis, standardfehler) — Standardfehler skaliert mit 1/sqrt(n_sim).
+        Bei antithetischen Variaten wird der Standardfehler aus den
+        n_sim/2 unabhaengigen Paar-Mittelwerten berechnet.
     """
     rng = np.random.default_rng(seed)
 
@@ -237,6 +239,16 @@ def mc_preis(
         payoffs = np.maximum(K - S_T, 0.0)
 
     diskontiert = np.exp(-r * T) * payoffs
-    preis = float(diskontiert.mean())
-    se = float(diskontiert.std(ddof=1) / np.sqrt(len(diskontiert)))
+
+    if antithetisch:
+        # Z und -Z sind abhaengig: Die unabhaengigen Stichproben sind die
+        # Paar-Mittelwerte (f(Z) + f(-Z)) / 2. Nur so ist der Standardfehler
+        # korrekt - und nur so wird die Varianzreduktion sichtbar.
+        m = len(Z_halb)
+        stichprobe = 0.5 * (diskontiert[:m] + diskontiert[m:])
+    else:
+        stichprobe = diskontiert
+
+    preis = float(stichprobe.mean())
+    se = float(stichprobe.std(ddof=1) / np.sqrt(len(stichprobe)))
     return preis, se

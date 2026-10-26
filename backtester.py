@@ -16,6 +16,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import yfinance as yf
 
+from analytics import sharpe_ratio
+
 
 HANDELSTAGE_PRO_JAHR = 252
 
@@ -109,12 +111,19 @@ def simuliere_portfolio(
 # Kennzahlen
 # ---------------------------------------------------------------------------
 
-def kennzahlen(portfolio_serie: pd.Series) -> dict:
+def kennzahlen(portfolio_serie: pd.Series, rf: float = 0.0) -> dict:
     """
     Berechnet Performance- und Risiko-Kennzahlen fuer eine Portfolio-Serie.
 
-    Annualisierung verwendet geometrisches Mittel (Compound Annual Growth Rate),
-    da dies bei mehrjaehrigen Zeitraeumen realistischer ist als arithmetisches.
+    Die ausgewiesene Jahresrendite ist das geometrische Mittel (CAGR), da dies
+    bei mehrjaehrigen Zeitraeumen die tatsaechlich erzielte Rendite zeigt.
+    Die Sharpe Ratio folgt dagegen der projektweiten Definition aus
+    analytics.sharpe_ratio (arithmetisches Mittel der Tagesrenditen), damit
+    sie mit analytics.py und optimizer.py vergleichbar ist.
+
+    Parameter:
+        portfolio_serie: taeglicher Portfoliowert
+        rf: risikofreier Zins fuer die Sharpe Ratio (annualisiert, Default 0)
 
     Returns:
         Dict mit Rohwerten (nicht gerundet) fuer:
@@ -128,7 +137,7 @@ def kennzahlen(portfolio_serie: pd.Series) -> dict:
 
     renditen = s.pct_change().dropna()
     annual_v = renditen.std(ddof=1) * np.sqrt(HANDELSTAGE_PRO_JAHR)
-    sharpe_ratio = annual_r / annual_v if annual_v > 0 else np.nan
+    sharpe = sharpe_ratio(renditen, rf=rf) if annual_v > 0 else np.nan
 
     normiert = s / s.iloc[0]
     max_dd = (normiert / normiert.cummax() - 1).min()
@@ -137,7 +146,7 @@ def kennzahlen(portfolio_serie: pd.Series) -> dict:
         "gesamt_rendite": gesamt,
         "annual_rendite": annual_r,
         "annual_vol":     annual_v,
-        "sharpe":         sharpe_ratio,
+        "sharpe":         sharpe,
         "max_drawdown":   max_dd,
     }
 

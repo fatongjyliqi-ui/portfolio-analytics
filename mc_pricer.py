@@ -48,7 +48,8 @@ print(f"  {'Black-Scholes (exakt)':<24} {bs_call:>8.4f}  {'—':>12}  {'—':>9}
 print(f"  {'Naiver MC':<24} {naiv_preis:>8.4f}  {naiv_se:>12.6f}  {t_naiv:>9.3f}")
 print(f"  {'Antithetisch MC':<24} {anti_preis:>8.4f}  {anti_se:>12.6f}  {t_anti:>9.3f}")
 print("-" * 65)
-print(f"  Varianzreduktion durch antithetische Variaten: {se_reduktion:.1f}%")
+print(f"  Antithetische Variaten: Standardfehler -{se_reduktion:.1f}%, "
+      f"Varianz -{(1.0 - (anti_se / naiv_se) ** 2) * 100.0:.1f}%")
 print("=" * 65)
 print()
 

@@ -1,8 +1,8 @@
 # portfolio-analytics
 
-Quantitative Portfolio-Analyse mit Python — eigene Implementierung von Markowitz-Portfoliotheorie, Backtesting und ETF-Analyse auf realen Marktdaten.
+Quantitative Portfolio- und Optionsanalyse mit Python — eigene Implementierung von Markowitz-Optimierung, Faktormodellen, Backtesting, Black-Scholes-Greeks, impliziter Volatilität und Monte-Carlo-Pricing auf realen Marktdaten.
 
-Teil eines 5-Monats-Projekts an der Schnittstelle Mathematik und Finanzen, inspiriert von der wissenschaftlich fundierten Vermögensaufbau-Logik von Dr. Andreas Beck.
+> **English summary:** Self-built Python toolkit for quantitative finance: Markowitz optimisation (minimum-variance, tangency portfolio, capital market line), CAPM and Fama-French 3-factor regressions, a rebalancing backtester, Black-Scholes pricing with all Greeks, implied-volatility smiles from live option chains, and a Monte Carlo pricer with antithetic variates. Core formulas are verified by an automated test suite (put-call parity, Greeks vs. finite differences, MC vs. closed form, optimiser vs. analytical solution).
 
 ---
 
@@ -12,7 +12,11 @@ Teil eines 5-Monats-Projekts an der Schnittstelle Mathematik und Finanzen, inspi
 - **Marktdaten-Pipeline:** Automatischer Datenabruf via yfinance, Cleaning auf gemeinsame Handelstage
 - **Backtesting-Engine:** Buy-and-Hold sowie periodisch rebalancierte Portfolio-Strategien mit beliebigen Asset-Gewichtungen
 - **ETF-Analyse:** Performance- und Risiko-Vergleich mehrerer Anlageklassen über lange Zeiträume
+- **Portfolio-Optimierung:** Minimum-Varianz- und Tangency-Portfolio, Efficient Frontier, Capital Market Line
+- **Faktormodelle:** CAPM- und Fama-French-3-Faktor-Regressionen, Rolling Beta
+- **Optionen:** Black-Scholes-Preise, alle Greeks, implizite Volatilität (Brent), Monte Carlo mit antithetischen Variaten
 - **Visualisierung:** Indexverläufe, Renditen-Verteilungen, Korrelations-Heatmaps, Drawdown-Charts
+- **Tests:** 31 automatisierte Tests prüfen die mathematischen Kernfunktionen gegen exakte Resultate
 
 ---
 
@@ -30,7 +34,7 @@ Indexverläufe, Renditen-Verteilung, Korrelationen und Drawdown-Verläufe für d
 
 ![ETF Charts](plots/etf_charts.png)
 
-### Phase 3 — Portfolio-Optimierung & Faktor-Analyse
+### Portfolio-Optimierung & Faktor-Analyse
 
 **Efficient Frontier mit Capital Market Line** — Min-Variance-Portfolio, Tangency-Portfolio und CML für ein 5-Asset-Universum (SPY, QQQ, URTH, TLT, GLD).
 
@@ -40,7 +44,7 @@ Indexverläufe, Renditen-Verteilung, Korrelationen und Drawdown-Verläufe für d
 
 ![Faktor-Karte](plots/faktor_karte.png)
 
-### Phase 4 — Optionen und Black-Scholes
+### Optionen und Black-Scholes
 
 **Greeks-Dashboard** — alle fünf partiellen Ableitungen des Black-Scholes-Preises (Delta, Gamma, Vega, Theta, Rho) als Funktion des Aktienkurses. Jeder Greek mit Call und Put in einem 6-Panel-Dashboard.
 
@@ -50,6 +54,10 @@ Indexverläufe, Renditen-Verteilung, Korrelationen und Drawdown-Verläufe für d
 
 ![Volatility Smile](plots/vol_smile.png)
 
+**Monte-Carlo-Pricing mit Varianzreduktion** — Konvergenz des MC-Preises gegen die exakte Black-Scholes-Lösung samt 95-%-Konfidenzintervallen. Antithetische Variaten senken den Standardfehler bei gleicher Rechenzeit um rund 30 % (Varianz rund −50 %); beide Verfahren folgen der theoretischen 1/√n-Rate.
+
+![MC-Konvergenz](plots/mc_konvergenz.png)
+
 ---
 
 ## Setup
@@ -58,7 +66,7 @@ Indexverläufe, Renditen-Verteilung, Korrelationen und Drawdown-Verläufe für d
 pip install -r requirements.txt
 ```
 
-Benötigt Python 3.10+ und folgende Bibliotheken: NumPy, Pandas, Matplotlib, yfinance.
+Benötigt Python 3.10+ und folgende Bibliotheken: NumPy, Pandas, Matplotlib, SciPy, statsmodels, yfinance (für die Tests zusätzlich pytest).
 
 ---
 
@@ -84,6 +92,10 @@ portfolio-analytics/
 ├── greeks_dashboard.py          # Anwendung: Greeks-Dashboard (6 Panels)
 ├── vol_smile.py                 # Anwendung: Volatility Smile (Markt- oder Synthetik)
 ├── mc_pricer.py                 # Anwendung: MC-Pricer mit Varianzreduktion & Konvergenz
+│
+├── tests/                       # pytest-Suite (läuft ohne Internet, synthetische Daten)
+│   ├── test_options.py
+│   └── test_portfolio.py
 │
 └── plots/                       # Generierte Charts
     ├── etf_charts.png
@@ -117,6 +129,22 @@ python mc_pricer.py                 # MC-Konvergenzanalyse erzeugen (in plots/)
 
 Beim ersten Lauf werden die Daten über yfinance live von Yahoo Finance geladen — dafür ist eine Internetverbindung nötig.
 
+## Tests
+
+```bash
+pip install pytest
+pytest
+```
+
+Die Tests laufen ohne Internetverbindung und prüfen unter anderem:
+
+- **Put-Call-Parität** und Arbitragegrenzen der Black-Scholes-Preise
+- **Greeks** (Delta, Gamma, Vega, Theta, Rho) gegen zentrale Differenzenquotienten
+- **Implizite Volatilität** als Rundreise: Preis aus σ berechnen, σ zurückgewinnen
+- **Monte Carlo** liegt im Konfidenzintervall um den exakten Preis; antithetische Variaten senken den Standardfehler
+- **Optimizer:** Minimum-Varianz-Portfolio stimmt mit der geschlossenen Lösung Σ⁻¹1 / 1ᵀΣ⁻¹1 überein; das Tangency-Portfolio schlägt 2.000 Zufallsportfolios
+- **Backtester** und **CAPM-Regression** auf Daten mit bekanntem Ergebnis
+
 ---
 
 ## Methodische Notizen
@@ -125,26 +153,30 @@ Beim ersten Lauf werden die Daten über yfinance live von Yahoo Finance geladen 
 - Annualisierung: Renditen mit Faktor 252 (Handelstage pro Jahr), Volatilitäten mit √252 (Wurzel-T-Regel)
 - Volatilität wird auf den **Renditen** berechnet, nicht auf den Preisen
 - Annualisierte Rendite im Backtester als geometrisches Mittel (Compound Annual Growth Rate), um Verzerrung durch arithmetische Mittelung über lange Zeiträume zu vermeiden
+- **Sharpe Ratio** projektweit einheitlich (`analytics.sharpe_ratio`): (arithmetische Jahresrendite − r_f) / Jahresvolatilität — dieselbe Konvention wie in der Markowitz-Optimierung. In den Kennzahlen-Tabellen ist r_f = 0 (reiner Vergleich), in der Optimierung r_f = 2 %
+- Monte-Carlo-Standardfehler bei antithetischen Variaten aus den unabhängigen Paar-Mittelwerten (f(Z) + f(−Z)) / 2
 - Stichproben-Statistik (ddof=1) für Standardabweichungen
 - Rebalancing-Frequenzen: jährlich, quartalsweise, monatlich, oder Buy-and-Hold
 - Keine Transaktionskosten — bei Interpretation der Ergebnisse beachten
 
+**Grenzen der Methoden**
+
+- Die Efficient Frontier ist **in-sample** geschätzt: μ und Σ stammen aus demselben Zeitraum, in dem das Portfolio bewertet wird. Schätzfehler (insbesondere bei μ) machen die optimalen Gewichte instabil — out-of-sample ist ein Gleichgewichtsportfolio oft schwer zu schlagen
+- Optimierung **long-only** (Gewichte zwischen 0 und 1, Summe 1); Leerverkäufe sind nicht modelliert
+- Black-Scholes unterstellt konstante Volatilität — der Volatility Smile zeigt, dass der Markt das nicht tut
+- Die implizite Volatilität wird ohne Dividenden berechnet; das erklärt einen Teil der Abweichung zur yfinance-Referenz
+
 ---
 
-## Status
+## Ausblick
 
-**Aktueller Stand:** Phase 4 von 5 abgeschlossen.
-
-- Phase 1 (Python-Grundlagen): abgeschlossen
-- Phase 2 (NumPy, Pandas, yfinance, Visualisierung, Backtesting): abgeschlossen
-- Phase 3 (Portfolio-Optimierung, Efficient Frontier, CAPM, Fama-French): abgeschlossen
-- Phase 4 (Optionen, Black-Scholes, Greeks, Implizite Volatilität, Monte Carlo): abgeschlossen
-- Phase 5 (finales Analyse-Projekt): geplant
+- Amerikanische und Bermuda-Optionen: Binomialbaum (CRR) und Longstaff-Schwartz-Monte-Carlo, validiert gegen bekannte Referenzwerte
+- Out-of-Sample-Backtest der Markowitz-Portfolios mit rollierender Schätzung von μ und Σ
 
 ---
 
 ## Hintergrund
 
-Das Projekt entsteht in einer fünfmonatigen Übergangsphase zwischen Mathematik-Bachelor (Universität Münster, Abschluss mit Auszeichnung) und Master-Studium an der Schnittstelle Mathematik und Finanzen.
+Das Projekt ist in der Zeit zwischen meinem Mathematik-Bachelor (Universität Münster, Schwerpunkt Finanzmathematik und Stochastik) und dem Master in Mathematik an der Universität Bonn entstanden.
 
-Ziel ist es, die mathematischen Grundlagen der modernen Portfoliotheorie nicht nur theoretisch zu verstehen, sondern in eigenständig implementierten, transparenten und auf realen Daten validierten Tools umzusetzen — als Vorbereitung auf eine Karriere im quantitativen Asset Management beziehungsweise in der wissenschaftlich fundierten Vermögensverwaltung.
+Ziel ist es, die mathematischen Grundlagen der modernen Portfoliotheorie nicht nur theoretisch zu verstehen, sondern in eigenständig implementierten, transparenten und auf realen Daten validierten Tools umzusetzen — als Vorbereitung auf eine Tätigkeit im quantitativen Asset Management und Risikomanagement.
